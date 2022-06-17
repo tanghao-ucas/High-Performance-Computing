@@ -46,11 +46,9 @@ int main()
 	int p = 4, q = np/p;
 
 	MPI_Comm row_comm, col_comm;
-	/*
-	MPI_Comm_split(comm, row_color, iam, &row_comm);
-	MPI_Comm_split(comm, col_color, iam, &col_comm);
-	*/
+
 	MPI_Comm_split2d(comm, iam, np, p, q, &row_comm, &col_comm);
+	
 	int row_rank, row_size;
 	MPI_Comm_rank(row_comm, &row_rank);
 	MPI_Comm_size(row_comm, &row_size);
@@ -59,7 +57,7 @@ int main()
 	MPI_Comm_rank(col_comm, &col_rank);
 	MPI_Comm_size(col_comm, &col_size);
 
-	int data = iam;
+	int data = iam;		// 整形数据
 	int recv = -1;
 	int tag = 99;
 	int next = (row_rank + 1) % row_size;
@@ -75,7 +73,7 @@ int main()
 		MPI_Send(&data, 1, MPI_INT, next, tag, row_comm);
 	}
 	*/
-	MPI_Bcast2d(&data, 1, MPI_INT, 1, 2, row_comm, col_comm);
+	MPI_Bcast2d(&data, 1, MPI_INT, 0, 0, row_comm, col_comm);
 	
 	int send = 0;
 

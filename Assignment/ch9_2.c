@@ -8,7 +8,7 @@
 #define INT_NUM 3
 #define FLOAT_NUM 2
 #define CHAR_NUM 5
-#define STRUCT_NUM 10
+#define STRUCT_NUM 5
 
 typedef struct data{
 	int m[INT_NUM];
@@ -18,11 +18,9 @@ typedef struct data{
 
 void StructPrint(Data *s)
 {
-	VecPrint(s->m, INT_NUM, sizeof(int));
-	for(int j = 0;j < FLOAT_NUM; j++) printf("%f ", s->a[j]);
-	printf("\n");
-	for(int i = 0; i < CHAR_NUM; i++) printf("%c", s->c[i]);
-	printf("\n");
+	VecPrint(s->m, INT_NUM, T_INT);
+	VecPrint(s->a, FLOAT_NUM, T_FLOAT);
+	VecPrint(s->c, CHAR_NUM, T_CHAR);
 }
 
 int main(int argc, char **argv)
@@ -37,8 +35,8 @@ int main(int argc, char **argv)
 	MPI_Comm_size(comm, &np);
 
 	// create & initial structs
-	Data x[STRUCT_NUM];
-	for(int i = 0; i < STRUCT_NUM; i++){
+	Data x[10];
+	for(int i = 0; i < 10; i++){
 		for(int j = 0; j < INT_NUM; j++) x[i].m[j] = 0;
 		for(int j = 0; j < FLOAT_NUM; j++) x[i].a[j] = 0.0;
 		for(int j = 0; j < CHAR_NUM; j++) x[i].c[j] = 'a';
@@ -57,7 +55,7 @@ int main(int argc, char **argv)
 	int root = 0, dest = 1;
 	int tag = 0;
 	if(iam == 0){
-		for(int i = 0; i < STRUCT_NUM; i++){
+		for(int i = 0; i < 10; i++){
 			for(int j = 0; j < INT_NUM; j++) x[i].m[j] = i*10 + j;
 			for(int j = 0; j < FLOAT_NUM; j++) x[i].a[j] = i + 0.3 * j;
 			for(int j = 0; j < CHAR_NUM; j++) x[i].c[j] = 'a' + i + 1;
@@ -67,7 +65,7 @@ int main(int argc, char **argv)
 	}
 	else{
 		MPI_Recv(x, STRUCT_NUM, newtype, root, tag, comm, &st);
-		for(int i = 0; i < STRUCT_NUM; i++){
+		for(int i = 0; i < 10; i++){
 			printf("In x[%d]:\n", i);
 			StructPrint(&x[i]);
 		}
@@ -77,6 +75,7 @@ int main(int argc, char **argv)
 
 	return 0;	
 }	
+
 
 
 
